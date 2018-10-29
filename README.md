@@ -22,4 +22,6 @@ In the shell, run the project with Flask.
 FLASK_APP=sandbox.py flask run
 ```
 
-Also, you'll need the API key and secret from Vicky B)
+Also, you'll need the API key and secret from Vicky!
+
+Then set them as environment variables in the pipenv shell.
