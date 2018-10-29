@@ -10,7 +10,7 @@ In the repo, install dependencies using:
 pipenv install
 ```
 
-Now you can access the environment shell!
+Now you can access the environment shell with all the dependencies (like Flask) ready to go.
 
 ```
 pipenv shell
