@@ -2,7 +2,7 @@
 
 ### python-sandbox
 
-Install pipenv if you don't have it already.
+Using pipenv as a dependency & virtual environment manager.
 
 In the repo, install dependencies using:
 
