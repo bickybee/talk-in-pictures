@@ -16,7 +16,14 @@ Now you can access the environment shell with all the dependencies (like Flask) 
 pipenv shell
 ```
 
-In the shell, run the project with Flask.
+In order for the spaCy NLP library to work, you need to download some english languages stuff too.
+Do so in the shell.
+
+```
+python -m spacy download en
+```
+
+And now, in the shell, you can run the project with Flask.
 
 ```
 FLASK_APP=sandbox.py flask run
