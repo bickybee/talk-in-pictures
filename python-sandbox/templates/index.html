@@ -7,13 +7,19 @@
         <link rel="stylesheet" href="/static/styles.css">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
         <script src="/static/main.js"></script>
+        
         <title>CSC2526 Project</title>
     </head>
     <body>
         <!-- Input Area -->
         <div>
             <input type="text" id="input"/>
+        </div>
+
+        <div id="controls">
+            <img id="record" src="/static/mic.png" onclick="toggleRecording(this);">
         </div>
 
         <!-- Output Area -->

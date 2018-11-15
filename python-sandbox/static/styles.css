@@ -32,3 +32,12 @@
 .tkn-img > img {
     max-width: 100%;
 }
+
+
+#record { 
+    height: 15vh;
+    filter: opacity(50%);
+ }
+#record.recording { 
+    filter: opacity(100%);
+}

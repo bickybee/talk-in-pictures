@@ -2,11 +2,15 @@ import os
 import spacy
 import requests
 from requests_oauthlib import OAuth1
-from flask import Flask, json, render_template, jsonify, request
+from flask import Flask, json, render_template, jsonify, request, session
+from flask_socketio import emit, SocketIO
+import wave
+import uuid
 
 # setup
 nlp = spacy.load('en')
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 # auth for the noun project API
 noun_project_api_key = os.environ.get("NOUN_PROJECT_API_KEY") # in the shell, $ export NOUN_PROJECT_API_KEY=key
@@ -21,9 +25,6 @@ ENDPOINT_PARAMS = "?limit_to_public_domain=1&limit=1"
 @app.route("/")
 def home():
     return render_template('index.html')
-
-# Returns a JSON object containing a breakdown of all tokens, mapped
-# to icons from the Noun Project (if such an icon exists)
 
 @app.route("/parse", methods=['POST'])
 def parse():
@@ -91,3 +92,37 @@ def parse():
     )
 
     return res
+
+# From Miguel Grinberg's SocketIO-Examples
+# https://github.com/miguelgrinberg/socketio-examples/tree/master/audio
+@socketio.on('start-recording')
+def start_recording(options):
+    """Start recording audio from the client."""
+    id = uuid.uuid4().hex  # server-side filename
+    session['wavename'] = id + '.wav'
+    wf = wave.open(session['wavename'], 'wb')
+    wf.setnchannels(options.get('numChannels', 1))
+    wf.setsampwidth(options.get('bps', 16) // 8)
+    wf.setframerate(options.get('fps', 44100))
+    session['wavefile'] = wf
+
+    ########################
+    # Temporary pseudocode #
+    ########################
+    # Pass the file to the Google Speech API
+    # Parse output from the API
+    # Generate icons using output received
+    # Use emit('add-transcription', <data>) to update the client
+
+@socketio.on('write-audio')
+def write_audio(data):
+    """Write a chunk of audio from the client."""
+    session['wavefile'].writeframes(data)
+
+@socketio.on('end-recording')
+def end_recording():
+    """Stop recording audio from the client."""
+    emit('add-transcription', "hello")
+    session['wavefile'].close()
+    del session['wavefile']
+    del session['wavename']
