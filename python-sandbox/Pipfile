@@ -10,6 +10,10 @@ requests = "*"
 flask = "*"
 inflect = "*"
 nltk = "*"
+python-socketio = "*"
+flask-socketio = "*"
+gevent = "*"
+wave = "*"
 
 [dev-packages]
 

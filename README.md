@@ -4,13 +4,19 @@
 
 Using pipenv as a dependency & virtual environment manager.
 
-In the repo, install dependencies using:
+To add new dependencies, use:
+
+```
+pipenv install package_name_here
+```
+
+Install all dependencies using:
 
 ```
 pipenv install
 ```
 
-Now you can access the environment shell with all the dependencies (like Flask) ready to go.
+Now you can access the environment shell with all the dependencies ready to go.
 
 ```
 pipenv shell
@@ -29,6 +35,4 @@ And now, in the shell, you can run the project with Flask.
 FLASK_APP=sandbox.py flask run
 ```
 
-Also, you'll need the API key and secret from Vicky!
-
-Then set them as environment variables in the pipenv shell.
+Also, you'll need to ask for the .env file with API keys and secrets!
