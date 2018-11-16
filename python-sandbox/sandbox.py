@@ -168,7 +168,6 @@ def write_audio(data):
 @socketio.on('end-recording')
 def end_recording():
     """Stop recording audio from the client."""
-    emit('add-transcription', "hello")
     session['wavefile'].close()
 
     with io.open(session['wavename'], 'rb') as audio_file:
@@ -181,8 +180,11 @@ def end_recording():
         language_code='en-US')
 
     response = client.recognize(config, audio)
+
+    print("Number of response results:", len(response.results))
     for result in response.results:
         print('Transcript: {}'.format(result.alternatives[0].transcript))
+        emit('add-transcription', result.alternatives[0].transcript)
 
     del session['wavefile']
     del session['wavename']

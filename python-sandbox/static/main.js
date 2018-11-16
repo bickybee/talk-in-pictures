@@ -99,3 +99,29 @@ $('#input').bind('input propertychange', function() {
         }
     })
 })
+
+function startDictation() {
+    if (window.hasOwnProperty('webkitSpeechRecognition')) {
+        var recognition = new webkitSpeechRecognition();
+
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.lang = "en-US";
+        recognition.start();
+
+        recognition.onresult = function(e) {
+            console.log(e.results);
+            console.log(e.results[0][0].transcript);
+
+            // Fake continuous recognition:
+            recognition.start();
+            // recognition.stop();
+        };
+
+        recognition.onerror = function(e) {
+            recognition.stop();
+            console.log(e.error);
+        };
+    }
+}
