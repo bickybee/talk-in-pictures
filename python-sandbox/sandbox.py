@@ -79,6 +79,7 @@ def parse():
 
     # Handle body
     data = request.get_json()
+    # Using Icon objects:
     # icon_list = sentence_to_icons(data["input"])
     # retval = {"tokens":[icon.__dict__ for icon in icon_list]}
 
