@@ -8,6 +8,8 @@ spacy = "*"
 requests-oauthlib = "*"
 requests = "*"
 flask = "*"
+inflect = "*"
+nltk = "*"
 
 [dev-packages]
 
