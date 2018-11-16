@@ -85,7 +85,6 @@ window.addEventListener('load', initAudio );
 
 /* END SOCKETIO AUDIO RECORDING CODE */
 
-
 /* Format and render JSON received from the server */
 function handleParse(raw) {
     $('#output').html('');  // empty the field
@@ -102,23 +101,22 @@ function handleParse(raw) {
     }
 }
 
+// API:
+// https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/interimResults
 function startDictation() {
     if (window.hasOwnProperty('webkitSpeechRecognition')) {
         var recognition = new webkitSpeechRecognition();
 
-        recognition.continuous = false;
+        recognition.continuous = true;
         recognition.interimResults = true;
 
         recognition.lang = "en-US";
         recognition.start();
 
+        // This thing doesn't stop at the moment:
         recognition.onresult = function(e) {
             console.log(e.results);
-            console.log(e.results[0][0].transcript);
-
-            // Fake continuous recognition:
-            recognition.start();
-            // recognition.stop();
+            // console.log(e.results[0][0].transcript);
         };
 
         recognition.onerror = function(e) {
