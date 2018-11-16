@@ -22,11 +22,12 @@ ENDPOINT_BASE = "http://api.thenounproject.com/icons/"
 ENDPOINT_PARAMS = "?limit_to_public_domain=1&limit=1"
 
 class Icon:
-  def __init__(self, token, keyword, url, timestamp):
-    self.token = token
-    self.keyword = keyword
-    self.url = url
-    self.timestamp = timestamp
+    def __init__(self, word, keyword, img, timestamp):
+        self.word = word
+        self.keyword = keyword
+        self.img = img
+        self.timestamp = timestamp
+
 
 def sentence_to_icons(sentence: str) -> List[Icon]:
     analyzed = nlp(sentence)
@@ -38,26 +39,21 @@ def sentence_to_icons(sentence: str) -> List[Icon]:
     return new_icons
 
 def token_to_icon(token) -> Icon: # how to type-hint spacy.Token?
-    print (token.text + " " + token.pos_)
-    if not (token.pos_ == "NOUN" or token.pos_ == "VERB"):
-        return None
-    
+    img = ""
     keyword = token.text
+
     if token.tag_ == "NNS":
         keyword = inf.singular_noun(token.text)
 
-    print(keyword)
-    response = requests.get(ENDPOINT_BASE + keyword + ENDPOINT_PARAMS, auth=auth)
-    if not (response.status_code == 200): # if we successfully find an icon...
-        return None
-    
-    data = json.loads(response.content)
-    url = data['icons'][0]['preview_url']
+    try:
+        response = requests.get(ENDPOINT_BASE + token.text + ENDPOINT_PARAMS, auth=auth)
 
-    return Icon(token, keyword, url, time.time())
+        # Found image:
+        if response.status_code == 200:
+            data = json.loads(response.content)
+            img = data['icons'][0]['preview_url']
 
-def icon_list_to_html(icons) -> str: 
-    html_str = ""
-    for icon in icons:
-        html_str += "<p><img src =\"" + icon.url + "\"><br>" + icon.token.text + "</p>"
-    return html_str
+    except:
+        print("RESPONSE ERROR: noun project API keys likely not set properly")
+
+    return Icon(token.text, keyword, img, time.time())
