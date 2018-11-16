@@ -1,0 +1,43 @@
+/************************/
+/*    GENERAL STYLE     */
+/************************/
+/* Container for holding all the tokens */
+#output {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+/************************/
+/* TOKEN-SPECIFIC STYLE */
+/************************/
+/* Holds content related to a single token */
+.tkn-container {
+    display: inline-block;
+}
+
+/* The caption for each token (generally the token itself, as plaintext) */
+.tkn-caption {
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+/* A container for the icon associated with the token */
+.tkn-img {
+    text-align: center;
+    width: 50px;
+}
+
+/* The actual image from the Noun Project */
+.tkn-img > img {
+    max-width: 100%;
+}
+
+
+#record { 
+    height: 15vh;
+    filter: opacity(50%);
+ }
+#record.recording { 
+    filter: opacity(100%);
+}
