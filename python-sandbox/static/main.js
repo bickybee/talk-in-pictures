@@ -1,5 +1,22 @@
 "use strict";
 
+$(document).ready(function() {
+    /*  Monitor changes to the input field.
+    This is a temporary function to make sure the POST call work. */
+    $('#input').bind('input propertychange', function() {
+        $.ajax({
+            url: '/parse',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify( {"input": $(this).val()}),
+            success: function(res) {
+                handleParse(res);   // render the response
+            }
+        })
+    })
+})
+
 /* 
     BEGIN SOCKETIO AUDIO RECORDING CODE 
     ----
@@ -84,18 +101,3 @@ function handleParse(raw) {
         $('#output').append(new_item);
     }
 }
-
-/*  Monitor changes to the input field.
-    This is a temporary function to make sure the POST call work. */
-$('#input').bind('input propertychange', function() {
-    $.ajax({
-        url: '/parse',
-        dataType: 'json',
-        type: 'post',
-        contentType: 'application/json',
-        data: JSON.stringify( {"input": $(this).val()}),
-        success: function(res) {
-            handleParse(res);   // render the response
-        }
-    })
-})

@@ -14,6 +14,7 @@ python-socketio = "*"
 flask-socketio = "*"
 gevent = "*"
 wave = "*"
+google-cloud-speech = "*"
 
 [dev-packages]
 

@@ -7,10 +7,30 @@ from flask_socketio import emit, SocketIO
 import wave
 import uuid
 
+from google.cloud import speech
+from google.cloud.speech import enums
+from google.cloud.speech import types
+
+from analysis import *
+
 # setup
 nlp = spacy.load('en')
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+language_code = 'en-US'  # a BCP-47 language tag
+# Audio recording parameters
+RATE = 16000 # should grab this from an http get (audiocontext)
+CHUNK = int(RATE / 10)  # 100ms
+
+client = speech.SpeechClient()
+config = types.RecognitionConfig(
+    encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+    sample_rate_hertz=RATE,
+    language_code=language_code)
+streaming_config = types.StreamingRecognitionConfig(
+    config=config,
+    interim_results=True)
 
 # auth for the noun project API
 noun_project_api_key = os.environ.get("NOUN_PROJECT_API_KEY") # in the shell, $ export NOUN_PROJECT_API_KEY=key
@@ -52,6 +72,8 @@ def parse():
 
     # Handle body
     data = request.get_json()
+    # icon_list = sentence_to_icons(data["input"])
+    # retval = {"tokens":[icon.__dict__ for icon in icon_list]}
 
     # Perform tagging
     sentence = data["input"]
