@@ -6,6 +6,13 @@ from flask import Flask, json, render_template, jsonify, request, session
 from flask_socketio import emit, SocketIO
 import wave
 import uuid
+import io
+
+# Google Speech setup:
+from google.cloud import speech
+from google.cloud.speech import enums, types
+
+client = speech.SpeechClient()
 
 # setup
 nlp = spacy.load('en')
@@ -106,6 +113,8 @@ def start_recording(options):
     wf.setframerate(options.get('fps', 44100))
     session['wavefile'] = wf
 
+    print("Created WAV:", session['wavename'])
+
     ########################
     # Temporary pseudocode #
     ########################
@@ -113,6 +122,43 @@ def start_recording(options):
     # Parse output from the API
     # Generate icons using output received
     # Use emit('add-transcription', <data>) to update the client
+
+    # Open file for reading by Google Speech
+    # https://cloud.google.com/speech-to-text/docs/streaming-recognize#speech-streaming-recognize-python
+    # with io.open(session['wavename'], 'rb') as audio_file:
+    #     content = audio_file.read()
+
+    # print("A")
+
+    # stream = [content]
+    # requests = (types.StreamingRecognizeRequest(audio_content=chunk) for chunk in stream)
+
+    # print("B")
+
+    # config = types.RecognitionConfig(
+    #     encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+    #     sample_rate_hertz=16000,
+    #     language_code='en-US')
+
+    # print("C")
+
+    # streaming_config = types.StreamingRecognitionConfig(config=config)
+
+    # print("D")
+
+    # responses = client.streaming_recognize(streaming_config, requests)
+    # print("Response:", responses)
+
+    # for response in responses:
+    #     print("hi")
+    #     for result in response.results:
+    #         print('Finished: {}'.format(result.is_final))
+    #         print('Stability: {}'.format(result.stability))
+    #         alternatives = result.alternatives
+ 
+    #         for alternative in alternatives:
+    #             print('Confidence: {}'.format(alternative.confidence))
+    #             print(u'Transcript: {}'.format(alternative.transcript))
 
 @socketio.on('write-audio')
 def write_audio(data):
@@ -124,5 +170,19 @@ def end_recording():
     """Stop recording audio from the client."""
     emit('add-transcription', "hello")
     session['wavefile'].close()
+
+    with io.open(session['wavename'], 'rb') as audio_file:
+        content = audio_file.read()
+        audio = types.RecognitionAudio(content=content)
+
+    config = types.RecognitionConfig(
+        encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=48000,
+        language_code='en-US')
+
+    response = client.recognize(config, audio)
+    for result in response.results:
+        print('Transcript: {}'.format(result.alternatives[0].transcript))
+
     del session['wavefile']
     del session['wavename']
