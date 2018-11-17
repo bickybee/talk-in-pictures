@@ -30,6 +30,25 @@ function handleParse(raw) {
     }
 }
 
+/* Handles WebkitSpeechRecognition event  */
+function handleRecognitionResult(event) {
+    var transcript = "";
+    for (var i = event.resultIndex; i < event.results.length; ++i) { // why can't it be a normal loop :/
+        if (event.results[i].isFinal) {
+            // Can do something different here...
+        } 
+        transcript += event.results[i][0].transcript;
+    }
+    // console.log(transcript)
+    sendParse(transcript)
+}
+
+/* Handles WebkitSpeechRecognition error */
+function handleRecognitionError(event) {
+    this.stop();
+    console.log(e.error);
+}
+
 // API:
 // https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/interimResults
 function startDictation() {
@@ -44,21 +63,9 @@ function startDictation() {
         recognition.start();
 
         // This thing doesn't stop at the moment:
-        recognition.onresult = function(e) {
-            var transcript = "";
-            for (var i = e.resultIndex; i < e.results.length; ++i) { // why can't it be a normal loop :/
-                if (event.results[i].isFinal) {
-                    // Can do something different here...
-                } 
-                transcript += e.results[i][0].transcript;
-            }
-            // console.log(transcript)
-            sendParse(transcript)
-        };
-
-        recognition.onerror = function(e) {
-            recognition.stop();
-            console.log(e.error);
+        recognition.onresult = handleRecognitionResult;
+        recognition.onerror = handleRecognitionError;
+            
         };
     } else {
         console.log("no speech recognition!");
