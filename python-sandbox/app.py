@@ -1,11 +1,26 @@
 from flask import Flask, json, render_template, jsonify, request, session
+from flask_session import Session
 from parse import *
 
 app = Flask(__name__)
+# # Should I be using sessions to store state?
+# app.secret_key = 'super secret key'
+# app.config['SESSION_TYPE'] = 'filesystem'
+# Session(app)
+icon_manager = IconManager()
 
 @app.route("/")
 def home():
     return render_template('index.html')
+
+@app.route('/set/')
+def set():
+    session['key'] = 'value'
+    return 'ok'
+
+@app.route('/get/')
+def get():
+    return session.get('key', 'not set')
 
 @app.route("/parse", methods=['POST'])
 def parse():
@@ -34,7 +49,7 @@ def parse():
 
     # Handle body
     data = request.get_json()
-    parsed = parse_sentence(data["input"])
+    parsed = icon_manager.parse_request(data)
     retval = {"tokens": parsed}
 
     # Set up response

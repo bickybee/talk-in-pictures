@@ -1,13 +1,13 @@
 "use strict";
 
 /* Format and send JSON to the server */
-function sendParse(sentence){
+function sendParse(sentence, phraseNum){
     $.ajax({
         url: '/parse',
         dataType: 'json',
         type: 'post',
         contentType: 'application/json',
-        data: JSON.stringify( {"input": sentence}),
+        data: JSON.stringify( {"input": sentence, "phrase_num": phraseNum}),
         success: function(res) {
             handleParse(res);   // render the response
         }
@@ -33,20 +33,18 @@ function handleParse(raw) {
 /* Handles WebkitSpeechRecognition event  */
 function handleRecognitionResult(event) {
     var transcript = "";
-    for (var i = event.resultIndex; i < event.results.length; ++i) { // why can't it be a normal loop :/
-        if (event.results[i].isFinal) {
-            // Can do something different here...
-        } 
+    console.log(event)
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
         transcript += event.results[i][0].transcript;
     }
-    // console.log(transcript)
-    sendParse(transcript)
+    console.log(transcript)
+    sendParse(transcript, event.resultIndex)
 }
 
 /* Handles WebkitSpeechRecognition error */
 function handleRecognitionError(event) {
     this.stop();
-    console.log(e.error);
+    console.log(event.error);
 }
 
 // API:
@@ -58,6 +56,7 @@ function startDictation() {
 
         recognition.continuous = true;
         recognition.interimResults = true;
+        recognition.maxAlternatives = 1;
 
         recognition.lang = "en-US";
         recognition.start();
@@ -66,7 +65,6 @@ function startDictation() {
         recognition.onresult = handleRecognitionResult;
         recognition.onerror = handleRecognitionError;
             
-        };
     } else {
         console.log("no speech recognition!");
     }
