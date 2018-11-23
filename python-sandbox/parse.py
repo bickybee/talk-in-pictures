@@ -21,7 +21,7 @@ noun_project_api_secret = os.environ.get("NOUN_PROJECT_API_SECRET") # in the she
 auth = OAuth1(noun_project_api_key, noun_project_api_secret)
 
 # Convenient strings for the API
-ENDPOINT_BASE = "http://api.thenounproject.com/icons/"
+ENDPOINT_BASE = "http://api.thenounproject.com/icon/"
 ENDPOINT_PARAMS = "?limit_to_public_domain=1&limit=1"
 
 class IconManager:
@@ -90,12 +90,12 @@ class IconManager:
             # Otherwise, call the API to get an img
             else:
                 try:
-                    response = requests.get(ENDPOINT_BASE + token.text + ENDPOINT_PARAMS, auth=auth)
+                    response = requests.get(ENDPOINT_BASE + token.text , auth=auth)
 
                     # Found image:
                     if response.status_code == 200:
                         data = json.loads(response.content)
-                        img = data['icons'][0]['preview_url']
+                        img = data['icon']['preview_url']
                         # Cache it so we don't need to look it up again!
                         self.cached_icons[keyword] = img
 
