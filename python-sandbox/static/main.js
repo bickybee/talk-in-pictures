@@ -1,5 +1,7 @@
 "use strict";
 
+var recognition;
+
 /* Format and send JSON to the server */
 function sendParse(sentence){
     $.ajax({
@@ -20,13 +22,16 @@ function handleParse(raw) {
 
     var tokens = raw["tokens"];
     for (var i in tokens) {
-        // Create new container:
-        var new_item = '<div class="tkn-container">' +
-            '<div class="tkn-img"><img src="' + tokens[i]["img"] + '"></img></div>' +
-            '<div class="tkn-caption">' + tokens[i]["word"] + '</div>' +
-            '</div>';
+        // Ignore the grim reaper:
+        if (tokens[i]["word"].trim() != "") {
+            // Create new container:
+            var new_item = '<div class="tkn-container">' +
+                '<div class="tkn-img"><img src="' + tokens[i]["img"] + '"></img></div>' +
+                '<div class="tkn-caption">' + tokens[i]["word"] + '</div>' +
+                '</div>';
 
-        $('#output').append(new_item);
+            $('#output').append(new_item);
+        }
     }
 }
 
@@ -46,15 +51,25 @@ function handleRecognitionResult(event) {
 /* Handles WebkitSpeechRecognition error */
 function handleRecognitionError(event) {
     this.stop();
-    console.log(e.error);
+    console.log(event.error);
+
+    if ($("#mic").hasClass("recording-active")) {
+        toggleRecording();
+    }
+}
+
+function toggleRecording() {
+    $("#mic").toggleClass("recording-inactive");
+    $("#mic").toggleClass("recording-active");
 }
 
 // API:
 // https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/interimResults
 function startDictation() {
-    if (window.hasOwnProperty('webkitSpeechRecognition')) {
+    toggleRecording();
+
+    if ($("#mic").hasClass("recording-active")) {
         console.log("start speech rec");
-        var recognition = new webkitSpeechRecognition();
 
         recognition.continuous = true;
         recognition.interimResults = true;
@@ -65,14 +80,18 @@ function startDictation() {
         // This thing doesn't stop at the moment:
         recognition.onresult = handleRecognitionResult;
         recognition.onerror = handleRecognitionError;
-            
-        };
     } else {
-        console.log("no speech recognition!");
+        recognition.stop();
     }
 }
 
 $(document).ready(function() {
+    if (window.hasOwnProperty('webkitSpeechRecognition')) {
+        recognition = new webkitSpeechRecognition();
+    } else {
+        console.log("no speech recognition!");
+    }
+
     /*  Monitor changes to the input field.
     This is a temporary function to make sure the POST call work. */
     $('#input').bind('input propertychange', function() {

@@ -1,10 +1,62 @@
+html, body {
+    height: 99%;
+    font-family: Arial, Helvetica, sans-serif
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
 /************************/
 /*    GENERAL STYLE     */
 /************************/
 /* Container for holding all the tokens */
-#output {
+.output-container {
     overflow: auto;
     white-space: nowrap;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.container {
+    flex: 1 0 auto;
+    overflow: auto;
+    position: relative;
+}
+
+.inner {
+    display: table;
+}
+
+.recorder-container {
+    flex-shrink: 0;
+    height: 150px;
+    width: 100%;
+    text-align: center;
+    bottom: 5px;
+}
+
+.recorder-container > img {
+    max-height: 100%;
+}
+
+#mic {
+    -webkit-transition: opacity .15s ease-in-out;
+    -moz-transition: opacity .15s ease-in-out;
+    -ms-transition: opacity .15s ease-in-out;
+    -o-transition: opacity .15s ease-in-out;
+    transition: opacity .15s ease-in-out;
+}
+
+.recording-inactive {
+    opacity: 0.2;
+}
+
+.recording-active {
+    opacity: 1;
 }
 
 /************************/
@@ -25,19 +77,10 @@
 /* A container for the icon associated with the token */
 .tkn-img {
     text-align: center;
-    width: 50px;
+    width: 200px;
 }
 
 /* The actual image from the Noun Project */
 .tkn-img > img {
     max-width: 100%;
-}
-
-
-#record { 
-    height: 15vh;
-    filter: opacity(50%);
- }
-#record.recording { 
-    filter: opacity(100%);
 }
