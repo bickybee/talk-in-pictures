@@ -16,6 +16,7 @@ gevent = "*"
 wave = "*"
 google-cloud-speech = "*"
 grpcio = "*"
+flask-session = "*"
 
 [dev-packages]
 
