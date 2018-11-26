@@ -14,32 +14,17 @@ image_manager = ImageManager()
 def home():
     return render_template('index.html')
 
-@app.route("/images/<keyword>/<index>", methods=['PUT'])
-def set_image(keyword, index):
-    """
-    Set new primary image url for KEYWORD to the image at INDEX in that word's list of images
-    """
-    status = 200
-    print(keyword)
-    success = image_manager.set_image(keyword, int(index))
-    if not success:
-        status = 204
-
-    res = app.response_class(
-        status=status,
-        mimetype='application/json'
-    )
-
-    return res
-
 @app.route("/images/<keyword>", methods=['GET'])
 def get_images(keyword):
     """
-    Return a JSON object that lists up to 10 image urls for the given word
+    Handles a GET request, returning a JSON object that lists up to 10 image urls for <keyword>
+    (IMPORTANT!! <keyword> NOT just <word>-- cuz we may have a different "keyword" if the original "word" is plural)
     Body of response is in the format:
-    {
-        "images": [<url1>, <url2>, <url3>...]
-    }
+
+        {
+            "images": [<url1>, <url2>, <url3>...]
+        }
+
     """
     images = image_manager.get_image_list(keyword)
     retval = {"images": images}
@@ -53,32 +38,59 @@ def get_images(keyword):
 
     return res
 
+@app.route("/image/<keyword>", methods=['PUT'])
+def set_image(keyword):
+    """
+    Handles a PUT request, setting the image for <keyword> to the image at <index> in that word's list of images
+    Request body is in the format:
+
+        {
+            "index": <index>
+        }
+
+    Only returns a response status code!
+    """
+    status = 200
+    data = request.get_json()
+    index = int(data["index"])
+    success = image_manager.set_image(keyword, index)
+    if not success:
+        status = 204
+
+    res = app.response_class(
+        status=status,
+        mimetype='application/json'
+    )
+
+    return res
+
 @app.route("/phrases", methods=['GET'])
 def get_phrases():
     """
-    Return a JSON object that contains a list of all phrases (which are lists of tokens/word-image pairs)
-    {
-        "phrases": [
-            [
-                {
-                    "word": "<token>",
-                    "keyword: "<keyword>",
-                    "img": "<url>" (or "" if no image found)
+    Handles a GET request, returning a JSON object that contains a list of all phrases (which are lists of word-keyword-image dicts)
 
-                },
-                {
+        {
+            "phrases": [
+                [
+                    {
+                        "word": "<token>",
+                        "keyword: "<keyword>",
+                        "img": "<url>" (or "" if no image found)
+
+                    },
+                    {
+                        ...
+                    }
+                ],
+                [
                     ...
-                }
-            ],
-            [
-                ...
+                ]
             ]
-        ]
-    }
+        }
+
     """
     retval = {"phrases": image_manager.all_phrases}
 
-    # Set up response
     res = app.response_class(
         response=json.dumps(retval),
         status=200,
@@ -89,29 +101,34 @@ def get_phrases():
 
 
 @app.route("/phrases/<index>", methods=['PUT', 'GET'])
-def set_get_phrase(index):
-    """
-    Handle a GET request: returns the index-th phrase
-    {
-        "phrase": 
-            [
-                {
-                    "word": "<word>",
-                    "keyword: "<keyword>",
-                    "img": "<url>" (or "" if no image found)
+def get_set_phrase(index):
 
-                },
-                {
-                    ...
-                }
-            ]
-    }
-    """
+    ind = int(index)
+
     if request.method == "GET":
+        """
+        Handles a GET request, returns a response containing the <index>-th phrase (as a list of dicts)
 
-        i = int(index)
-        if i < len(image_manager.all_phrases):
-            retval = {"phrase": image_manager.all_phrases[i]}
+            {
+                "phrase": 
+                    [
+                        {
+                            "word": "<word>",
+                            "keyword: "<keyword>",
+                            "img": "<url>" (or "" if no image found)
+
+                        },
+                        {
+                            ...
+                        }
+                    ]
+            }
+
+        """
+
+        # If the given index exists in the phrase-list, return the phrase
+        if ind < len(image_manager.all_phrases):
+            retval = {"phrase": image_manager.all_phrases[ind]}
             res = app.response_class(
                 response=json.dumps(retval),
                 status=200,
@@ -119,6 +136,7 @@ def set_get_phrase(index):
             )
             return res
         
+        # Else, error!
         else:
             res = app.response_class(
                 status=404,
@@ -126,37 +144,36 @@ def set_get_phrase(index):
             )
             return res
 
-
-    """
-    Handle a PUT request whose body is in the format:
-        {
-            "input": "<sentence>"
-        }
-
-    Creates/modifies the index-th phrase, returns it as a
-    JSON object mapping each token in the sentence to an
-    image URL from the Noun Project.
-
-    Body of response is in the format:
-    {
-        "phrase": 
-            [
-                {
-                    "word": "<word>",
-                    "keyword: "<keyword>",
-                    "img": "<url>" (or "" if no image found)
-
-                },
-                {
-                    ...
-                }
-            ]
-    }
-    """
     if request.method == "PUT":
+        """
+        Handle a PUT request whose body is in the format:
+
+            {
+                "input": "<sentence>"
+            }
+
+        Creates OR modifies the <index>-th phrase, returns it with the response format:
+
+            {
+                "phrase": 
+                    [
+                        {
+                            "word": "<word>",
+                            "keyword: "<keyword>",
+                            "img": "<url>" (or "" if no image found)
+
+                        },
+                        {
+                            ...
+                        }
+                    ]
+            }
+
+        """
+
         # Handle body
         data = request.get_json()
-        parsed = image_manager.parse_request(data["input"], int(index))
+        parsed = image_manager.parse_request(data["input"], ind)
         retval = {"phrase": parsed}
 
         # Set up response
