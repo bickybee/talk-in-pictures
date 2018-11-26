@@ -33,7 +33,7 @@ def set_image(keyword, index):
     return res
 
 @app.route("/images/<keyword>", methods=['GET'])
-def images(keyword):
+def get_images(keyword):
     """
     Return a JSON object that lists up to 10 image urls for the given word
     Body of response is in the format:
@@ -54,7 +54,7 @@ def images(keyword):
     return res
 
 @app.route("/phrases", methods=['GET'])
-def phrases():
+def get_phrases():
     """
     Return a JSON object that contains a list of all phrases (which are lists of tokens/word-image pairs)
     {
@@ -88,24 +88,15 @@ def phrases():
     return res
 
 
-@app.route("/parse", methods=['POST'])
-def parse():
+@app.route("/phrases/<index>", methods=['PUT', 'GET'])
+def set_get_phrase(index):
     """
-    Handle a POST request whose body is in the format:
-        {
-            "input": "<sentence>",
-            "num_phrase": num
-        }
-
-    And return a JSON object mapping each token in the sentence to an
-    image URL from the Noun Project.
-
-    Body of response is in the format:
+    Handle a GET request: returns the index-th phrase
     {
-        "tokens: 
+        "phrase": 
             [
                 {
-                    "word": "<token>",
+                    "word": "<word>",
                     "keyword: "<keyword>",
                     "img": "<url>" (or "" if no image found)
 
@@ -116,20 +107,66 @@ def parse():
             ]
     }
     """
+    if request.method == "GET":
 
-    # Handle body
-    data = request.get_json()
-    parsed = image_manager.parse_request(data)
-    retval = {"tokens": parsed}
+        i = int(index)
+        if i < len(image_manager.all_phrases):
+            retval = {"phrase": image_manager.all_phrases[i]}
+            res = app.response_class(
+                response=json.dumps(retval),
+                status=200,
+                mimetype='application/json'
+            )
+            return res
+        
+        else:
+            res = app.response_class(
+                status=404,
+                mimetype='application/json'
+            )
+            return res
 
-    # Set up response
-    res = app.response_class(
-        response=json.dumps(retval),
-        status=200,
-        mimetype='application/json'
-    )
 
-    return res
+    """
+    Handle a PUT request whose body is in the format:
+        {
+            "input": "<sentence>"
+        }
+
+    Creates/modifies the index-th phrase, returns it as a
+    JSON object mapping each token in the sentence to an
+    image URL from the Noun Project.
+
+    Body of response is in the format:
+    {
+        "phrase": 
+            [
+                {
+                    "word": "<word>",
+                    "keyword: "<keyword>",
+                    "img": "<url>" (or "" if no image found)
+
+                },
+                {
+                    ...
+                }
+            ]
+    }
+    """
+    if request.method == "PUT":
+        # Handle body
+        data = request.get_json()
+        parsed = image_manager.parse_request(data["input"], int(index))
+        retval = {"phrase": parsed}
+
+        # Set up response
+        res = app.response_class(
+            response=json.dumps(retval),
+            status=200,
+            mimetype='application/json'
+        )
+
+        return res
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

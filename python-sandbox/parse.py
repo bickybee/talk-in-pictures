@@ -51,19 +51,18 @@ class ImageManager:
             self.api = NOUN_PROJECT_API
 
     # Parse a request! Actually, should abstract out the data dict...
-    def parse_request(self, data: Dict) -> List[Dict[str, str]]:
+    def parse_request(self, phrase: str, num: int) -> List[Dict[str, str]]:
 
-        self.current_phrase = self.parse_sentence(data["input"])
-        phrase_num = data["phrase_num"]
+        self.current_phrase = self.parse_sentence(phrase)
 
         # Either push new phrase
-        if phrase_num > self.current_phrase_num:
+        if num > self.current_phrase_num:
             self.all_phrases.append(self.current_phrase)
-            self.current_phrase_num = phrase_num
+            self.current_phrase_num = num
         
         # Or update current phrase
         else:
-            self.all_phrases[phrase_num] = self.current_phrase
+            self.all_phrases[num] = self.current_phrase
 
         return self.current_phrase
 

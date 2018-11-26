@@ -5,11 +5,11 @@ var recognition;
 /* Format and send JSON to the server */
 function sendParse(sentence, phraseNum){
     $.ajax({
-        url: '/parse',
+        url: '/phrases/' + phraseNum,
         dataType: 'json',
-        type: 'post',
+        type: 'put',
         contentType: 'application/json',
-        data: JSON.stringify( {"input": sentence, "phrase_num": phraseNum}),
+        data: JSON.stringify( {"input": sentence}),
         success: function(res) {
             handleParse(res);   // render the response
         }
@@ -20,14 +20,14 @@ function sendParse(sentence, phraseNum){
 function handleParse(raw) {
     $('#output').html('');  // empty the field
 
-    var tokens = raw["tokens"];
-    for (var i in tokens) {
+    var phrase = raw["phrase"];
+    for (var i in phrase) {
         // Ignore the grim reaper:
-        if (tokens[i]["word"].trim() != "") {
+        if (phrase[i]["word"].trim() != "") {
             // Create new container:
             var new_item = '<div class="tkn-container">' +
-                '<div class="tkn-img"><img src="' + tokens[i]["img"] + '"></img></div>' +
-                '<div class="tkn-caption">' + tokens[i]["word"] + '</div>' +
+                '<div class="tkn-img"><img src="' + phrase[i]["img"] + '"></img></div>' +
+                '<div class="tkn-caption">' + phrase[i]["word"] + '</div>' +
                 '</div>';
 
             $('#output').append(new_item);
