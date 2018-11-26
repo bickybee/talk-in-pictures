@@ -14,22 +14,69 @@ image_manager = ImageManager()
 def home():
     return render_template('index.html')
 
-@app.route("/images", methods=['GET'])
-def images():
+@app.route("/images/<keyword>/<index>", methods=['PUT'])
+def set_image(keyword, index):
     """
-    Handle a GET request whose args are in the format:
-        /images?word=<string>
+    Set new primary image url for KEYWORD to the image at INDEX in that word's list of images
+    """
+    status = 200
+    print(keyword)
+    success = image_manager.set_image(keyword, int(index))
+    if not success:
+        status = 204
 
-    And return a JSON object that lists up to 10 image urls for the given word
+    res = app.response_class(
+        status=status,
+        mimetype='application/json'
+    )
 
+    return res
+
+@app.route("/images/<keyword>", methods=['GET'])
+def images(keyword):
+    """
+    Return a JSON object that lists up to 10 image urls for the given word
     Body of response is in the format:
     {
         "images": [<url1>, <url2>, <url3>...]
     }
     """
-    word = request.args.get("word")
-    images = image_manager.get_image_list(word)
+    images = image_manager.get_image_list(keyword)
     retval = {"images": images}
+
+    # Set up response
+    res = app.response_class(
+        response=json.dumps(retval),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return res
+
+@app.route("/phrases", methods=['GET'])
+def phrases():
+    """
+    Return a JSON object that contains a list of all phrases (which are lists of tokens/word-image pairs)
+    {
+        "phrases": [
+            [
+                {
+                    "word": "<token>",
+                    "keyword: "<keyword>",
+                    "img": "<url>" (or "" if no image found)
+
+                },
+                {
+                    ...
+                }
+            ],
+            [
+                ...
+            ]
+        ]
+    }
+    """
+    retval = {"phrases": image_manager.all_phrases}
 
     # Set up response
     res = app.response_class(
@@ -45,8 +92,10 @@ def images():
 def parse():
     """
     Handle a POST request whose body is in the format:
-        {"input": "<sentence>",
-        "num_phrase": num}
+        {
+            "input": "<sentence>",
+            "num_phrase": num
+        }
 
     And return a JSON object mapping each token in the sentence to an
     image URL from the Noun Project.
@@ -57,6 +106,7 @@ def parse():
             [
                 {
                     "word": "<token>",
+                    "keyword: "<keyword>",
                     "img": "<url>" (or "" if no image found)
 
                 },

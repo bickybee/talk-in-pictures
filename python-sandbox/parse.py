@@ -43,12 +43,14 @@ class ImageManager:
         self.num_requests = 0
         self.api = 0
         
+    # Which API will we use? This is called at start-up with a command line argument
     def set_api(self, api: str) -> None:
         if api == "photo":
             self.api = BING_API
         elif api == "icon":
             self.api = NOUN_PROJECT_API
 
+    # Parse a request! Actually, should abstract out the data dict...
     def parse_request(self, data: Dict) -> List[Dict[str, str]]:
 
         self.current_phrase = self.parse_sentence(data["input"])
@@ -83,14 +85,19 @@ class ImageManager:
         # Default: no image
         img = ""
         keyword = token.text
-        # We are only fetching icon images for nouns and verbs...
+
+        # If plural noun, use singular as our keyword
+        if token.tag_ == "NNS":
+            keyword = inf.singular_noun(token.text)
+
+        # Only try to visualize word if it is concrete enough
         if self.concreteness_analyser.is_concrete_enough(keyword):
 
-            # If we've fetched the icon for this keyword before, grab it from our cache dict
+            # If we've fetched the image for this keyword before, grab it from our cache dict
             if keyword in self.cached_images:
                 img = self.cached_images[keyword]["url"]
 
-            # Otherwise, call the API to get an img
+            # Otherwise, call the API to get an image
             else:
                 if self.api == NOUN_PROJECT_API:
                     img = self.image_from_noun_project(keyword)
@@ -103,13 +110,33 @@ class ImageManager:
         # Return our resultss
         icon = {"word": token.text, "keyword": keyword, "img": img}
         return icon
+
+    # For when the primary image of a word is updated, make sure to update the image url in all our phrases
+    def update_all_phrases(self) -> List[Dict[str, str]]:
+        for phrase in self.all_phrases:
+            for word in phrase:
+                if word["keyword"] in self.cached_images:
+                    updated_img_url = self.cached_images[word["keyword"]]["url"]
+                    word["img"] = updated_img_url
     
+    # Get a list of up to 10 images for the keyword
     def get_image_list(self, keyword: str) -> List[str]:
         if keyword in self.cached_images:
             return self.cached_images[keyword]["all_urls"]
         
         return []
+    
+    # Set the primary image url for a keyword to the url at INDEX in that keyword's image list
+    def set_image(self, keyword: str, index: int) -> bool:
+        if keyword in self.cached_images:
+            self.cached_images[keyword]["url"] = self.cached_images[keyword]["all_urls"][index]
+            self.update_all_phrases()
+            return True
+        
+        return False
 
+    # Return url of the first image from The Noun Project API
+    # Also creates an entry in our image cache, including up to 10 images
     def image_from_noun_project(self, keyword: str) -> str:
         img = ""
 
@@ -131,6 +158,8 @@ class ImageManager:
 
         return img
 
+    # Return url of the first image from Bing's image search API
+    # Also creates an entry in our image cache, including up to 10 images
     def image_from_bing(self, keyword) -> str:
         img = ""
 
