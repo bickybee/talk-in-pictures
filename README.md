@@ -32,7 +32,7 @@ python -m spacy download en
 And now, in the shell, you can run the project with Flask.
 
 ```
-FLASK_APP=sandbox.py flask run
+FLASK_APP=app.py flask run
 ```
 
-Also, you'll need to ask for the .env file with API keys and secrets!
+You'll also need a .env file with API keys and such!
