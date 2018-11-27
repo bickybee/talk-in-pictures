@@ -13,12 +13,33 @@ body {
 /************************/
 /* Container for holding all the tokens */
 .output-container {
-    overflow: auto;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
     height: auto;
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    /*top: 50%;*/
+    /*transform: translateY(-50%);*/
+    z-index: 1;
+    top: 0;
+}
+
+.transparent-overlay {
+    background-color: #ffffff;
+    width: 100%;
+    height: 200px;
+    z-index: 99;
+    position: sticky;
+
+    display: none;
+}
+
+.top-overlay {
+    top: 0;
+    background: linear-gradient(180deg, white, transparent);
+}
+
+.btm-overlay {
+    bottom: 0;
+    background: linear-gradient(0deg, white, transparent);
 }
 
 .container {
@@ -51,6 +72,10 @@ body {
     transition: opacity .15s ease-in-out;
 }
 
+#mic:hover {
+    cursor: pointer;
+}
+
 .recording-inactive {
     opacity: 0.2;
 }
@@ -65,6 +90,17 @@ body {
 /* Holds content related to a single token */
 .tkn-container {
     display: inline-block;
+    -webkit-transition: transform .15s ease-in-out;
+    -moz-transition: transform .15s ease-in-out;
+    -ms-transition: transform .15s ease-in-out;
+    -o-transition: transform .15s ease-in-out;
+    transition: transform .15s ease-in-out;
+}
+
+.tkn-container:hover {
+    transform: scale(1.07);
+    cursor: pointer;
+
 }
 
 /* The caption for each token (generally the token itself, as plaintext) */
@@ -72,15 +108,163 @@ body {
     text-align: center;
     padding-left: 5px;
     padding-right: 5px;
+    padding-bottom: 5px;
 }
 
 /* A container for the icon associated with the token */
 .tkn-img {
     text-align: center;
     width: 200px;
+    height: 200px;
+    margin: 0 auto;
 }
 
 /* The actual image from the Noun Project */
 .tkn-img > img {
     max-width: 100%;
+    max-height: 100%;
+}
+
+
+/************************/
+/* MODAL CONTENT STYLE  */
+/************************/
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 100; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    -webkit-animation-name: fadeIn; /* Fade in the background */
+    -webkit-animation-duration: 0.4s;
+    animation-name: fadeIn;
+    animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+    position: fixed;
+    bottom: 0;
+    background-color: #fefefe;
+    width: 100%;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: slideIn;
+    animation-duration: 0.4s
+}
+
+/* The Close Button */
+.close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    padding: 1px 16px;
+    background-color: #4e7572;
+    color: white;
+}
+
+.modal-header > h3 {
+    margin-block-start: 14px;
+    margin-block-end: 14px;
+}
+
+.modal-body {
+    padding: 2px 16px;
+}
+
+.modal-body > table {
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.modal-body > table td {
+    padding-left: 30px;
+}
+
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
+/* Alternate Icons List */
+#alternativeIcons {
+    
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+    from {bottom: -300px; opacity: 0} 
+    to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}
+
+/* Sliders */
+.slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
 }

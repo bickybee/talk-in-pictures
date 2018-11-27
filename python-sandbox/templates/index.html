@@ -13,12 +13,187 @@
         <title>CSC2526 Project</title>
     </head>
     <body>
+        <div class="transparent-overlay top-overlay"></div>
         <div class="container">
             <div class="output-container" id="output">
+                <!-- Temporary display -->
+<!--                 <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        hello
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        how
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        are
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        you
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        today
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        hippopotamus
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        antihippopotamus
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        hippopotamus
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        onomatopoeia
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        onomatopoeia
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        onomatopoeia
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        onomatopoeia
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        onomatopoeia
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        onomatopoeia
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        onomatopoeia
+                    </div>
+                </div>
+                <div class="tkn-container">
+                    <div class="tkn-img">
+                        <img src="/static/mic.png"></img>
+                    </div>
+                    <div class="tkn-caption">
+                        onomatopoeia
+                    </div> -->
+                </div>
             </div>
         </div>
+        <div class="transparent-overlay btm-overlay"></div>
         <div class="recorder-container">
             <img onclick="startDictation()" src="/static/mic.png" id="mic" class="recording-inactive" />
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" id="modalClose">&times;</span>
+                    <h3>Settings</h3>
+                </div>
+                <div class="modal-body">
+                    <table>
+                        <tr>
+                            <td>Image Size</td>
+                            <td>
+                                <div class="slidecontainer">
+                                    <input type="range" min="0" max="200" value="100" class="slider" id="iconRange">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Font Size</td>
+                            <td>
+                                <div class="slidecontainer">
+                                    <input type="range" min="0" max="200" value="16" class="slider" id="fontRange">
+                                </div>
+                            </td>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Icon Selection Modal -->
+        <div id="iconModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" id="iconModalClose">&times;</span>
+                    <h3>Select a New Icon</h3>
+                </div>
+                <div class="modal-body">
+                    <div id="alternativeIcons">
+                        <!-- Container to hold all the icons you can select from -->
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
