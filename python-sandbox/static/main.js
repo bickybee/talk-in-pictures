@@ -9,7 +9,7 @@ var iconSpan;
 
 var iconSlider;
 var fontSlider;
-var baseIconSize = 200; // in px
+var baseIconSize = 100; // in px
 
 var currIdx = 0;
 var currIcon; //currently selected icon
@@ -21,7 +21,6 @@ START our server calls and handlers
 */
 
 /* Format and send phrase JSON to the server */
->>>>>>> e4b45afd318f14fb3d1b6b4640ce15ab4225fbc8
 function sendParse(sentence, phraseNum){
     $.ajax({
         url: '/phrases/' + phraseNum,
@@ -37,19 +36,27 @@ function sendParse(sentence, phraseNum){
 
 /* Format and render JSON received from the server */
 function handleParse(raw, phraseNum) {
-    // If this phrase already has a div, update that div:
+    var phraseDivId = '#phrase-' + phraseNum;
+    var madeNewDiv = false;
 
+    if ($(phraseDivId).length == 0) {
+        // New phrase; create new div
+        var newDiv = '<div class="wrapper">' + 
+        '<div class="phrase-container" id="' + "phrase-" + phraseNum + '">' +
+            '</div></div>';
 
-    // If this is a new phrase, create a new div:
-    
+        $('#convo-container').append(newDiv);
+        madeNewDiv = true;
+    }
 
-    $('#output').html('');  // empty the field
+    $(phraseDivId).html(''); // empty the field
 
     var phrase = raw["phrase"];
     for (var i in phrase) {
         // Ignore the grim reaper:
         if (phrase[i]["word"].trim() != "") {
             var id = "" + currIdx + "-" + phrase[i]["keyword"];
+            id = id.replace("'", "_");
 
             // Create new container:
             var new_item = '<div class="tkn-container" id="' + id + '">' +
@@ -59,16 +66,19 @@ function handleParse(raw, phraseNum) {
 
             currIdx++;  // generate unique id for this token (#-word, where # = currIdx)
 
-            $('#output').append(new_item);
+            $(phraseDivId).append(new_item);
             $(('#' + id)).click(displayAlternatives);
-            // scrollRight();
         }
+    }
+
+    if (madeNewDiv) {
+        autoScroll();
     }
 }
 
 function sendImageListRequest(icon){
     currIcon = icon;
-    var keyword = icon.id.split("-")[1]; // lol
+    var keyword = (icon.id.split("-")[1]).replace("_", "'"); // lol
     $.ajax({
         url: '/images/' + keyword,
         dataType: 'json',
@@ -106,6 +116,7 @@ function sendSetIconRequest(elem){
 
 function handleSetIconResponse(res){
     $(currIcon).find("img").attr("src", res.img);
+    $("#iconModal").css("display", "none");
 }
 
 /*
@@ -123,13 +134,13 @@ function displayAlternatives() {
     sendImageListRequest(this);
 }
 
-function scrollRight() {
+function autoScroll() {
     var targetElement = $('.container');
-    var speed = 1000;
+    var speed = 500;
 
-    var scrollWidth = $(targetElement).get(0).scrollWidth;
-    var clientWidth = $(targetElement).get(0).clientWidth;
-    $(targetElement).animate({ scrollLeft: scrollWidth - clientWidth },
+    var scrollHeight = $(targetElement).get(0).scrollHeight;
+    var clientHeight = $(targetElement).get(0).clientHeight;
+    $(targetElement).animate({ scrollTop: scrollHeight - clientHeight },
     {
         duration: speed
     });
