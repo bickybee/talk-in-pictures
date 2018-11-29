@@ -41,23 +41,25 @@ def get_images(keyword):
 @app.route("/image/<keyword>", methods=['PUT'])
 def set_image(keyword):
     """
-    Handles a PUT request, setting the image for <keyword> to the image at <index> in that word's list of images
+    Handles a PUT request, setting the image for <keyword> to a new <url>
     Request body is in the format:
 
         {
-            "index": <index>
+            "img": <url>
         }
 
     Only returns a response status code!
     """
     status = 200
     data = request.get_json()
-    index = int(data["index"])
-    success = image_manager.set_image(keyword, index)
+    img = data["img"]
+    success = image_manager.set_image(keyword, img)
     if not success:
         status = 204
 
+    retval = {"img": data["img"]}
     res = app.response_class(
+        response=json.dumps(retval), # send it back? lol
         status=status,
         mimetype='application/json'
     )

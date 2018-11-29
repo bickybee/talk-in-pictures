@@ -12,8 +12,13 @@ var fontSlider;
 var baseIconSize = 200; // in px
 
 var currIdx = 0;
+var currIcon; //currently selected icon
 
-/* Format and send JSON to the server */
+/*
+START our server calls and handlers
+*/
+
+/* Format and send phrase JSON to the server */
 function sendParse(sentence, phraseNum){
     $.ajax({
         url: '/phrases/' + phraseNum,
@@ -35,7 +40,7 @@ function handleParse(raw) {
     for (var i in phrase) {
         // Ignore the grim reaper:
         if (phrase[i]["word"].trim() != "") {
-            var id = "" + currIdx + "-" + phrase[i]["word"];
+            var id = "" + currIdx + "-" + phrase[i]["keyword"];
 
             // Create new container:
             var new_item = '<div class="tkn-container" id="' + id + '">' +
@@ -52,12 +57,61 @@ function handleParse(raw) {
     }
 }
 
+function sendImageListRequest(icon){
+    currIcon = icon;
+    var keyword = icon.id.split("-")[1]; // lol
+    $.ajax({
+        url: '/images/' + keyword,
+        dataType: 'json',
+        type: 'get',
+        contentType: 'application/json',
+        success: function(res) {
+            handleImageListResponse(res);   // render the response
+        }
+    })
+}
+
+function handleImageListResponse(raw){
+    var images = raw["images"]
+    $("#alternativeIcons").empty();
+    for (var i = 0; i < images.length; i++) {
+        var imgElem = $('<img>',{class:'alternative', src:images[i]});
+        $("#alternativeIcons").append(imgElem);
+    }
+}
+
+function sendSetIconRequest(elem){
+    var keyword = currIcon.id.split("-")[1];
+    var url = $(elem).attr("src")
+    $.ajax({
+        url: '/image/' + keyword,
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json',
+        data: JSON.stringify( {"img": url}),
+        success: function(res) {
+            handleSetIconResponse(res);
+        }
+    })   
+}
+
+function handleSetIconResponse(res){
+    $(currIcon).find("img").attr("src", res.img);
+}
+
+/*
+END our server calls and handlers
+*/
+
+function setIcon(){
+    sendSetIconRequest(this);
+}
+
 function displayAlternatives() {
     // Display the modal window:
+    currIcon = this;
     $("#iconModal").css("display", "block");
-
-    // Popula
-    $("#alternativeIcons").html(this.id);
+    sendImageListRequest(this);
 }
 
 function scrollRight() {
@@ -132,6 +186,9 @@ $(document).ready(function() {
     $('#input').bind('input propertychange', function() {
         sendParse($(this).val());
     })
+
+    // Set up all dynamically rendered children in alternativeIcons to call setIcon() onclick!
+    $("#alternativeIcons").on('click', '.alternative', setIcon);
 
     // Set up modal window variables:
     modal = document.getElementById('myModal');
