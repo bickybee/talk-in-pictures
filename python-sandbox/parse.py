@@ -31,20 +31,27 @@ bing_url = "https://api.cognitive.microsoft.com/bing/v7.0/images/search"
 NOUN_PROJECT_API = 0
 BING_API = 1
 
+
 class ImageManager:
+    """
+    This class needs a more suitable name...
+    Holds onto and manages all the phrase-to-image info!
+    """
 
     def __init__(self):
         self.concreteness_analyser = WordConcretenessAnalyser()
-        print("loaded concreteness ratings")
-        self.cached_images = {}
-        self.all_phrases = []
+        self.images = {}
+        self.phrases = []
         self.current_phrase = []
-        self.current_phrase_num = -1
-        self.num_requests = 0
+        self.current_phrase_index = -1
+        self.num_requests = 0 # For debugging
         self.api = 0
         
-    # Which API will we use? This is called at start-up with a command line argument
     def set_api(self, api: str) -> None:
+        """
+        Which image-search API will we use? This is called at start-up with a command line argument
+        """
+        
         if api == "photo":
             self.api = BING_API
         elif api == "icon":
@@ -56,13 +63,13 @@ class ImageManager:
         self.current_phrase = self.parse_sentence(phrase)
 
         # Either push new phrase
-        if num > self.current_phrase_num:
-            self.all_phrases.append(self.current_phrase)
-            self.current_phrase_num = num
+        if num > self.current_phrase_index:
+            self.phrases.append(self.current_phrase)
+            self.current_phrase_index = num
         
         # Or update current phrase
         else:
-            self.all_phrases[num] = self.current_phrase
+            self.phrases[num] = self.current_phrase
 
         return self.current_phrase
 
@@ -93,8 +100,8 @@ class ImageManager:
         if self.concreteness_analyser.is_concrete_enough(keyword):
 
             # If we've fetched the image for this keyword before, grab it from our cache dict
-            if keyword in self.cached_images:
-                img = self.cached_images[keyword]["url"]
+            if keyword in self.images:
+                img = self.images[keyword]["url"]
 
             # Otherwise, call the API to get an image
             else:
@@ -112,23 +119,23 @@ class ImageManager:
 
     # For when the primary image of a word is updated, make sure to update the image url in all our phrases
     def update_all_phrases(self) -> List[Dict[str, str]]:
-        for phrase in self.all_phrases:
+        for phrase in self.phrases:
             for word in phrase:
-                if word["keyword"] in self.cached_images:
-                    updated_img_url = self.cached_images[word["keyword"]]["url"]
+                if word["keyword"] in self.images:
+                    updated_img_url = self.images[word["keyword"]]["url"]
                     word["img"] = updated_img_url
     
     # Get a list of up to 10 images for the keyword
     def get_image_list(self, keyword: str) -> List[str]:
-        if keyword in self.cached_images:
-            return self.cached_images[keyword]["all_urls"]
+        if keyword in self.images:
+            return self.images[keyword]["all_urls"]
         
         return []
     
     # Set the primary image url for a keyword to the url at INDEX in that keyword's image list
-    def set_image(self, keyword: str, index: int) -> bool:
-        if keyword in self.cached_images:
-            self.cached_images[keyword]["url"] = self.cached_images[keyword]["all_urls"][index]
+    def set_image(self, keyword: str, url: str) -> bool:
+        if keyword in self.images:
+            self.images[keyword]["url"] = url
             self.update_all_phrases()
             return True
         
@@ -147,7 +154,7 @@ class ImageManager:
                 icons = data["icons"]
                 img = icons[0]['preview_url']
                 # Cache it so we don't need to look it up again!
-                self.cached_images[keyword] = {
+                self.images[keyword] = {
                     "url": img,
                     "all_urls": [icon['preview_url'] for icon in icons]
                 }
@@ -173,7 +180,7 @@ class ImageManager:
                 images = search_results["value"]
                 img = images[0]["contentUrl"]
                 # Cache it so we don't need to look it up again!
-                self.cached_images[keyword] = {
+                self.images[keyword] = {
                     "url": img,
                     "all_urls": [image['contentUrl'] for image in images]
                 }
@@ -182,45 +189,3 @@ class ImageManager:
             print("RESPONSE ERROR: bing API keys likely not set properly")
 
         return img
-
-'''
-Would eventually like to use some kind of class but for now it's a bit slower than just converting straight to JSON
-'''
-
-'''
-class Icon:
-    def __init__(self, word, keyword, img, occurence):
-        self.word = word
-        self.keyword = keyword
-        self.img = img
-        self.occurence = occurence
-
-def sentence_to_icons(sentence: str) -> List[Icon]:
-    analyzed = nlp(sentence)
-    new_icons = []
-    for token in analyzed:
-        icon = token_to_icon(token)
-        if icon:
-            new_icons.append(icon)
-    return new_icons
-
-def token_to_icon(token) -> Icon: # how to type-hint spacy.Token?
-    img = ""
-    keyword = token.text
-
-    if token.tag_ == "NNS":
-        keyword = inf.singular_noun(token.text)
-
-    try:
-        response = requests.get(ENDPOINT_BASE + token.text + ENDPOINT_PARAMS, auth=auth)
-
-        # Found image:
-        if response.status_code == 200:
-            data = json.loads(response.content)
-            img = data['icons'][0]['preview_url']
-
-    except:
-        print("RESPONSE ERROR: noun project API keys likely not set properly")
-
-    return Icon(token.text, keyword, img, time.time())
-'''

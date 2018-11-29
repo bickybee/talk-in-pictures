@@ -204,6 +204,11 @@ body {
     
 }
 
+.alternative:hover {
+    transform: scale(1.07);
+    cursor: pointer;
+}
+
 /* Add Animation */
 @-webkit-keyframes slideIn {
     from {bottom: -300px; opacity: 0} 
