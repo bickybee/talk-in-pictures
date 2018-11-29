@@ -14,8 +14,6 @@ var baseIconSize = 100; // in px
 var currIdx = 0;
 var currIcon; //currently selected icon
 
-var currPhraseNum = 0;
-
 /*
 START our server calls and handlers
 */
