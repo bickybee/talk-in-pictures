@@ -37,11 +37,6 @@ body {
     background: linear-gradient(180deg, white, transparent);
 }
 
-.btm-overlay {
-    bottom: 0;
-    background: linear-gradient(0deg, white, transparent);
-}
-
 .container {
     flex: 1 0 auto;
     overflow: auto;

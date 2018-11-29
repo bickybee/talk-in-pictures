@@ -13,6 +13,8 @@ var baseIconSize = 200; // in px
 
 var currIdx = 0;
 
+var currPhraseNum = 0;
+
 /* Format and send JSON to the server */
 function sendParse(sentence, phraseNum){
     $.ajax({
@@ -22,13 +24,19 @@ function sendParse(sentence, phraseNum){
         contentType: 'application/json',
         data: JSON.stringify( {"input": sentence}),
         success: function(res) {
-            handleParse(res);   // render the response
+            handleParse(res, phraseNum);   // render the response
         }
     })
 }
 
 /* Format and render JSON received from the server */
-function handleParse(raw) {
+function handleParse(raw, phraseNum) {
+    // If this phrase already has a div, update that div:
+
+
+    // If this is a new phrase, create a new div:
+    
+
     $('#output').html('');  // empty the field
 
     var phrase = raw["phrase"];
