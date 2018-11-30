@@ -168,7 +168,8 @@ def get_set_phrase(index):
                         {
                             ...
                         }
-                    ]
+                    ],
+                "index": <index>
             }
 
         """
@@ -176,7 +177,11 @@ def get_set_phrase(index):
         # Handle body
         data = request.get_json()
         parsed = image_manager.parse_request(data["input"], ind)
-        retval = {"phrase": parsed}
+        index = image_manager.get_current_phrase_index()
+        retval = {
+            "phrase": parsed,
+            "index": index
+        }
 
         # Set up response
         res = app.response_class(
@@ -186,6 +191,17 @@ def get_set_phrase(index):
         )
 
         return res
+
+@app.route("/end", methods=['POST'])
+def end_recording():
+    image_manager.update_phrase_count()
+
+    res = app.response_class(
+            status=200,
+            mimetype='application/json'
+    )
+
+    return res
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

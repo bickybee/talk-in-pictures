@@ -27,13 +27,14 @@ function sendParse(sentence, phraseNum){
         contentType: 'application/json',
         data: JSON.stringify( {"input": sentence}),
         success: function(res) {
-            handleParse(res, phraseNum);   // render the response
+            handleParse(res);   // render the response
         }
     })
 }
 
 /* Format and render JSON received from the server */
-function handleParse(raw, phraseNum) {
+function handleParse(raw) {
+    var phraseNum = raw["index"]
     var phraseDivId = '#phrase-' + phraseNum;
     var madeNewDiv = false;
 
@@ -117,6 +118,13 @@ function handleSetIconResponse(res){
     $("#iconModal").css("display", "none");
 }
 
+function sendRecordingEndedRequest(){
+    $.ajax({
+        url: '/end',
+        type: 'post'
+    })
+}
+
 /*
 END our server calls and handlers
 */
@@ -165,6 +173,11 @@ function handleRecognitionError(event) {
     }
 }
 
+function handleRecognitionEnd(event) {
+    console.log("")
+    sendRecordingEndedRequest();
+}
+
 function toggleRecording() {
     $("#mic").toggleClass("recording-inactive");
     $("#mic").toggleClass("recording-active");
@@ -174,7 +187,6 @@ function toggleRecording() {
 // https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/interimResults
 function startDictation() {
     toggleRecording();
-
     if ($("#mic").hasClass("recording-active")) {
         console.log("start speech rec");
 
@@ -187,6 +199,7 @@ function startDictation() {
 
         recognition.onresult = handleRecognitionResult;
         recognition.onerror = handleRecognitionError;
+        recognition.onend = handleRecognitionEnd;
     } else {
         recognition.stop();
     }

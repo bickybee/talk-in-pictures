@@ -46,6 +46,7 @@ class ImageManager:
         self.current_phrase_index = -1
         self.num_requests = 0 # For debugging
         self.api = 0
+        self.phrase_count = 0
         
     def set_api(self, api: str) -> None:
         """
@@ -57,19 +58,29 @@ class ImageManager:
         elif api == "icon":
             self.api = NOUN_PROJECT_API
 
-    # Parse a request! Actually, should abstract out the data dict...
+    def update_phrase_count(self) -> None:
+        print("NUM RECORDINGS")
+        self.phrase_count = len(self.phrases)
+        print (self.phrase_count)
+
+    def get_current_phrase_index(self) -> int:
+        return self.current_phrase_index
+
+    # Parse a request!
     def parse_request(self, phrase: str, num: int) -> List[Dict[str, str]]:
+
+        index = num + self.phrase_count
 
         self.current_phrase = self.parse_sentence(phrase)
 
         # Either push new phrase
-        if num > self.current_phrase_index:
+        if index > self.current_phrase_index:
             self.phrases.append(self.current_phrase)
-            self.current_phrase_index = num
+            self.current_phrase_index = index
         
         # Or update current phrase
         else:
-            self.phrases[num] = self.current_phrase
+            self.phrases[index] = self.current_phrase
 
         return self.current_phrase
 

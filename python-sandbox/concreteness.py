@@ -6,7 +6,6 @@ class WordConcretenessAnalyser:
     def __init__(self):
         self.ratings = self.load_concreteness_ratings()
 
-
     def load_concreteness_ratings(self) -> Dict[str, float]:
         f = open(CSV_LOCATION)
         f.readline() # skip column titles
