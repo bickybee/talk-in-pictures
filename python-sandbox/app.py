@@ -91,7 +91,7 @@ def get_phrases():
         }
 
     """
-    retval = {"phrases": image_manager.all_phrases}
+    retval = {"phrases": image_manager.phrases}
 
     res = app.response_class(
         response=json.dumps(retval),
