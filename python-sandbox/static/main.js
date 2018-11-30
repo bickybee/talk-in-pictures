@@ -176,6 +176,10 @@ function handleRecognitionError(event) {
 function handleRecognitionEnd(event) {
     console.log("")
     sendRecordingEndedRequest();
+
+    if ($("#mic").hasClass("recording-active")) {
+        toggleRecording();
+    }
 }
 
 function toggleRecording() {
