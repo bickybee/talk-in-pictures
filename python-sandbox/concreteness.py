@@ -5,6 +5,7 @@ class WordConcretenessAnalyser:
 
     def __init__(self):
         self.ratings = self.load_concreteness_ratings()
+        self.threshold = 2.5
 
     def load_concreteness_ratings(self) -> Dict[str, float]:
         f = open(CSV_LOCATION)
@@ -24,7 +25,7 @@ class WordConcretenessAnalyser:
         return 5.0 # it's out of 5, let's just assume it is concrete enough if we can't find it
 
     def is_concrete_enough(self, word: str) -> bool:
-        if self.get_rating(word) >= 2.5: # shrug
+        if self.get_rating(word) >= self.threshold: # shrug
             return True
         
         return False
