@@ -17,6 +17,7 @@ wave = "*"
 google-cloud-speech = "*"
 grpcio = "*"
 flask-session = "*"
+webcolors = "*"
 
 [dev-packages]
 

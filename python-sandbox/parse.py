@@ -11,6 +11,7 @@ from requests_oauthlib import OAuth1
 import os
 import nltk
 from concreteness import *
+import webcolors
 
 # Setup
 nlp = spacy.load('en')
@@ -30,6 +31,11 @@ bing_url = "https://api.cognitive.microsoft.com/bing/v7.0/images/search"
 # Which API? (default is noun project)
 NOUN_PROJECT_API = 0
 BING_API = 1
+
+KEYWORD_BLACKLIST = ["what", "do", "can", "it", "i", "a", "or"]
+
+# Color image site:
+COLOR_IMG_STR = "https://www.colorhexa.com/{}.png"
 
 
 class ImageManager:
@@ -107,12 +113,18 @@ class ImageManager:
         if token.tag_ == "NNS":
             keyword = inf.singular_noun(token.text)
 
-        # Only try to visualize word if it is concrete enough
-        if self.concreteness_analyser.is_concrete_enough(keyword):
+        # If color, return a color
+        color_img = self.image_from_color(keyword)
+        if color_img is not "":
+            img = color_img
 
+        # Only try to visualize word if it is concrete enough
+        # if self.concreteness_analyser.is_concrete_enough(keyword) and (keyword not in KEYWORD_BLACKLIST):
+        elif (token.pos_ == "VERB" or token.pos_ == "NOUN" or self.concreteness_analyser.is_concrete_enough(keyword)) and (keyword not in KEYWORD_BLACKLIST):
+        
             # If we've fetched the image for this keyword before, grab it from our cache dict
             if keyword in self.images:
-                img = self.images[keyword]["url"]
+                img = self.images[keyword]["url"] 
 
             # Otherwise, call the API to get an image
             else:
@@ -124,7 +136,8 @@ class ImageManager:
                 self.num_requests += 1
                 print(self.num_requests)
 
-        # Return our resultss
+        # Return our results
+
         icon = {"word": token.text, "keyword": keyword, "img": img}
         return icon
 
@@ -200,3 +213,9 @@ class ImageManager:
             print("RESPONSE ERROR: bing API keys likely not set properly")
 
         return img
+
+    def image_from_color(self, keyword) -> str:
+        if keyword in webcolors.CSS3_NAMES_TO_HEX:
+            hex_color_code = webcolors.CSS3_NAMES_TO_HEX[keyword].strip("#")
+            return COLOR_IMG_STR.format(hex_color_code)
+        return ""
