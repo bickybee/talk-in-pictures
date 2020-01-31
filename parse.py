@@ -14,7 +14,9 @@ from concreteness import *
 import webcolors
 
 # Setup
-nlp = spacy.load('en')
+#import en_core_web_sm
+#nlp = en_core_web_sm.load()
+nlp = spacy.load('models/en_core_web_sm')
 inf = inflect.engine()
 
 # Stuff for APIs
@@ -108,6 +110,7 @@ class ImageManager:
         # Default: no image
         img = ""
         keyword = token.text
+        print(token.pos_)
 
         # If plural noun, use singular as our keyword
         if token.tag_ == "NNS":
@@ -130,6 +133,7 @@ class ImageManager:
             else:
                 if self.api == NOUN_PROJECT_API:
                     img = self.image_from_noun_project(keyword)
+                    print(img)
                 elif self.api == BING_API:
                     img = self.image_from_bing(keyword)
                 # How many requests are we making lol
@@ -172,7 +176,7 @@ class ImageManager:
 
         try:
             response = requests.get(ENDPOINT_BASE + keyword + ENDPOINT_PARAMS, auth=auth)
-
+            print(response.status_code)
             if response.status_code == 200:
                 data = json.loads(response.content)
                 icons = data["icons"]

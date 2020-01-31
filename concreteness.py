@@ -1,5 +1,5 @@
 from typing import Dict
-CSV_LOCATION = 'concreteness_ratings_brysbaert.txt'
+CSV_LOCATION = 'models/concreteness_ratings_brysbaert.txt'
 
 class WordConcretenessAnalyser:
 

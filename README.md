@@ -2,37 +2,22 @@
 
 ### python-sandbox
 
-Using pipenv as a dependency & virtual environment manager.
-
-To add new dependencies, use:
-
-```
-pipenv install package_name_here
-```
-
-Install all dependencies using:
+To set up the project, install all dependencies using:
 
 ```
 pipenv install
 ```
 
-Now you can access the environment shell with all the dependencies ready to go.
+Create a .env file with the following:
 
 ```
-pipenv shell
+FLASK_APP=app.py
+NOUN_PROJECT_API_KEY=[your-API-key]
+NOUN_PROJECT_API_SECRET=[your-API-secret]
 ```
 
-In order for the spaCy NLP library to work, you need to download some english languages stuff too.
-Do so in the shell.
+Now you can run the project with Flask.
 
 ```
-python -m spacy download en
+pipenv run flask run
 ```
-
-And now, in the shell, you can run the project with Flask.
-
-```
-FLASK_APP=app.py flask run
-```
-
-You'll also need a .env file with API keys and such!
