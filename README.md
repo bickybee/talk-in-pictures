@@ -1,7 +1,5 @@
 # csc2526-project
 
-### python-sandbox
-
 To set up the project, install all dependencies using:
 
 ```
