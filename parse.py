@@ -9,7 +9,6 @@ import inflect
 import requests
 from requests_oauthlib import OAuth1
 import os
-import nltk
 from concreteness import *
 import webcolors
 

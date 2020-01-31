@@ -1,1 +1,1 @@
-web: gunicorn
+web: gunicorn app:talk-in-pictures
