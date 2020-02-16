@@ -1,5 +1,13 @@
 # csc2526-project
 
+## Online usage
+
+Click the mic to turn it on, talk to see your words turn into pictures. Click on icons to have the option to "clarify" the selected image. 
+
+Works in Chrome.
+
+## Setup
+
 To set up the project, install all dependencies using:
 
 ```
